@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>버스 클라이언트</title>
+</head>
+<body>
+    <h1>버스 클라이언트</h1>
+    <script>
+        const ws = new WebSocket('ws://localhost:8080'); // 서버 주소
+
+        ws.onopen = function() {
+            // 서버에 버스임을 알림
+            ws.send(JSON.stringify({ role: 'bus' }));
+            console.log('버스 클라이언트 연결됨');
+        };
+
+        function updatePosition(position) {
+            const data = {
+                role: 'bus',
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+            };
+            ws.send(JSON.stringify(data));
+            console.log('위치 전송:', data);
+        }
+
+        function handleLocationError(error) {
+            console.error('위치 정보 오류:', error);
+        }
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.watchPosition(updatePosition, handleLocationError, {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            });
+        } else {
+            console.log("Geolocation is not supported by this browser.");
+        }
+    </script>
+</body>
+</html>
