@@ -4,41 +4,93 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>버스 클라이언트</title>
+
+  <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .bus-line {
+            position: relative;
+            width: 10px;
+            height: 200px;
+            background-color: #FFD400;
+            margin: 0 auto;
+        }
+        .station {
+            margin-bottom: 20px;
+        }
+        .bus-icon {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+        }
+        .station-name {
+            font-weight: bold;
+        }
+        .station-id {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .distance-time {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
 </head>
+<body>
+    <div class="container">
+        <div class="bus-line">
+            <div class="bus-icon" id="busIcon">
+                🚌
+            </div>
+        </div>
+        <div class="station">
+            <div id="currentLocation" class="station-name">
+                현재 위치
+            </div>
+            <div id="currentAddress" class="station-id">
+                위도: , 경도:
+            </div>
+        </div>
+        <div class="station">
+            <div id="nextStation" class="station-name">
+                다음 정류장
+            </div>
+            <div id="nextAddress" class="station-id">
+                정류장 정보
+            </div>
+        </div>
+        <div class="distance-time" id="distanceTime">
+            남은 거리: 0 km<br>
+            예상 소요 시간: 0분
+        </div>
+    </div>
+
 <body>
     <h1>버스 클라이언트</h1>
     <script>
-        const ws = new WebSocket('ws://localhost:8080'); // 서버 주소
-
+        const ws = new WebSocket('ws://localhost:8080');
         ws.onopen = function() {
-            // 서버에 버스임을 알림
             ws.send(JSON.stringify({ role: 'bus' }));
-            console.log('버스 클라이언트 연결됨');
         };
-
         function updatePosition(position) {
-            const data = {
-                role: 'bus',
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude
-            };
+            const data = { role: 'bus', latitude: position.coords.latitude, longitude: position.coords.longitude };
             ws.send(JSON.stringify(data));
-            console.log('위치 전송:', data);
         }
-
-        function handleLocationError(error) {
-            console.error('위치 정보 오류:', error);
-        }
-
-        if ("geolocation" in navigator) {
-            navigator.geolocation.watchPosition(updatePosition, handleLocationError, {
-                enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 0
-            });
-        } else {
-            console.log("Geolocation is not supported by this browser.");
-        }
+        navigator.geolocation.watchPosition(updatePosition);
     </script>
 </body>
 </html>
