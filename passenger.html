@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>탑승객 클라이언트</title>
+
+ <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .bus-line {
+            position: relative;
+            width: 10px;
+            height: 200px;
+            background-color: #FFD400;
+            margin: 0 auto;
+        }
+        .station {
+            margin-bottom: 20px;
+        }
+        .bus-icon {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+        }
+        .station-name {
+            font-weight: bold;
+        }
+        .station-id {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .distance-time {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="bus-line">
+            <div class="bus-icon" id="busIcon">
+                🚌
+            </div>
+        </div>
+        <div class="station">
+            <div id="currentLocation" class="station-name">
+                현재 위치
+            </div>
+            <div id="currentAddress" class="station-id">
+                위도: , 경도:
+            </div>
+        </div>
+        <div class="station">
+            <div id="nextStation" class="station-name">
+                다음 정류장
+            </div>
+            <div id="nextAddress" class="station-id">
+                정류장 정보
+            </div>
+        </div>
+        <div class="distance-time" id="distanceTime">
+            남은 거리: 0 km<br>
+            예상 소요 시간: 0분
+        </div>
+    </div>
+    
+</head>
+<body>
+    <h1>탑승객 클라이언트</h1>
+    <div id="busLocation">버스 위치를 기다리는 중...</div>
+    <script>
+        const ws = new WebSocket('ws://localhost:8080');
+        ws.onopen = function() {
+            ws.send(JSON.stringify({ role: 'passenger' }));
+        };
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            document.getElementById('busLocation').textContent = `버스 위치: 위도 ${data.latitude}, 경도 ${data.longitude}`;
+        };
+    </script>
+</body>
+</html>
