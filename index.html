@@ -50,10 +50,6 @@
     </style>
 </head>
 <body>
-    <h1>역할을 선택하세요</h1>
-    <button id="busBtn">버스</button>
-    <button id="passengerBtn">탑승객</button>
-    
     <div class="container">
         <div class="bus-line">
             <div class="bus-icon" id="busIcon">
@@ -83,30 +79,6 @@
     </div>
 
     <script>
-
-    onst ws = new WebSocket('ws://localhost:8080');
-        document.getElementById('busBtn').onclick = function() {
-            ws.send(JSON.stringify({ role: 'bus' }));
-            startBusClient();
-        };
-        document.getElementById('passengerBtn').onclick = function() {
-            ws.send(JSON.stringify({ role: 'passenger' }));
-            startPassengerClient();
-        };
-
-        function startBusClient() {
-            navigator.geolocation.watchPosition(position => {
-                const data = { role: 'bus', latitude: position.coords.latitude, longitude: position.coords.longitude };
-                ws.send(JSON.stringify(data));
-            });
-        }
-
-        function startPassengerClient() {
-            ws.onmessage = function(event) {
-                const data = JSON.parse(event.data);
-                document.getElementById('content').innerHTML = `버스 위치: 위도 ${data.latitude}, 경도 ${data.longitude}`;
-            };
-        }
         
         const stations = [
         { name: "오크우드 프리미어 코엑스 센터", lat: 37.5065, lon: 127.0587, address: "서울 강남구 테헤란로87길 46" },
